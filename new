@@ -1,769 +1,109 @@
-
-1 new activity
-3 new notifications
-New missed calls
-Has context menu
-Chat
-
-
-
-
-Unread
-Channels
-Chats
-Meeting chats
-Has context menu
-Unread messageLast messageGroup chatMeeting chatChatPersonal at mentionEveryone at mentionImportantUrgentDraftDraftMutedMeeting in progressMeet now in progressYou can't send messages because you are not a member of the chat.PrivateSharedHas context menuChannel at mentionTeam at mentionPersonal at mentionUnreadUnreadMeeting in progressUnreadChannelTeamHas pinned messagesSee moreCommunityTemporarily shown
-
-Teams and channels
-
-
-Chat
-
-Shared
-
-Storyline
-
-Has context menu
-
-
-
-
-
-
-tell me if you need call me  by Napoli, Valeria
-Napoli, Valeria
-8/12 5:36 PM
-
-
-tell me if you need call me 
-
-
-👍
-1 Like reaction.
-
-Wednesday, August 13
-Hi Vale by Kumar, Gaurav
-8/13 3:16 AM
-Kumar, Gaurav
-
-Hi Vale
-
-PA_TO column in parameter table by Kumar, Gaurav
-8/13 3:16 AM
-Kumar, Gaurav
-
-PA_TO column in parameter table
-
-is it in minutes or second by Kumar, Gaurav
-8/13 3:16 AM
-Kumar, Gaurav
-
-is it in minutes or second
-
-For PROCESS = 'WMS' AND CATE = 'IND_TIME' by Kumar, Gaurav
-8/13 3:17 AM
-Kumar, Gaurav
-
-For PROCESS = 'WMS' AND CATE = 'IND_TIME'
-
-Hi Gaurav! by Napoli, Valeria
-Napoli, Valeria
-8/13 3:17 AM
-
-
-Hi Gaurav!
-
-Begin Reference, is it in minutes or second... by Napoli, Valeria
-Napoli, Valeria
-8/13 3:17 AM
-
-Kumar, Gaurav
-8/13/2025 3:16 AM
-is it in minutes or second
-in minutes
-
-if is easy for the calculation, we can chan... by Napoli, Valeria
-Napoli, Valeria
-8/13 3:31 AM
-
-
-if is easy for the calculation, we can change it to sec
-
-yeah trying to change in sec in view itself by Kumar, Gaurav
-8/13 3:32 AM
-Kumar, Gaurav
-
-yeah trying to change in sec in view itself
-
-ok by Napoli, Valeria
-Napoli, Valeria
-8/13 3:32 AM
-
-
-ok
-
-we can update the time in secs in the table by Napoli, Valeria
-Napoli, Valeria
-8/13 3:32 AM
-
-we can update the time in secs in the table 
-
-Hey Vale by Kumar, Gaurav
-8/13 3:56 AM
-Kumar, Gaurav
-
-Hey Vale
-
-Hi! by Napoli, Valeria
-Napoli, Valeria
-8/13 4:30 PM
-
-
-Hi!
-
-Good afternoon by Napoli, Valeria
-Napoli, Valeria
-8/13 4:30 PM
-
-Good afternoon
-
-How are you doing? by Napoli, Valeria
-Napoli, Valeria
-8/13 4:30 PM
-
-How are you doing?
-
-Hey Vale by Kumar, Gaurav
-8/13 4:34 PM
-Kumar, Gaurav
-
-Hey Vale
-
-Good Morning by Kumar, Gaurav
-8/13 4:34 PM
-Kumar, Gaurav
-
-Good Morning
-
-I am doing good, How are you? by Kumar, Gaurav
-8/13 4:35 PM
-Kumar, Gaurav
-
-I am doing good, How are you?
-
-Hi  by Napoli, Valeria
-Napoli, Valeria
-8/13 5:39 PM
-
-
-Hi 
-
-I have a call with Sai in 5 munutes by Napoli, Valeria
-Napoli, Valeria
-8/13 5:39 PM
-
-I have a call with Sai in 5 munutes
-
-do you want to connect after? by Napoli, Valeria
-Napoli, Valeria
-8/13 5:39 PM
-
-do you want to connect after?
-
-SELECT * FROM  SC_LOG.INT_WMS.V_TD_GBL_SC_W... by Kumar, Gaurav
-8/13 5:49 PM
-Kumar, Gaurav
-
-SELECT * FROM  SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK_IN_SEC
-WHERE warehouse_number = 'OG09'
-AND (CONFIRMED_DATE = '2025-08-01' or CONFIRMED_DATE = '2025-08-02' )
-and  confirmed_by = 'F61319'
-
-for this example I don´t see any negative v... by Napoli, Valeria
-Napoli, Valeria
-8/13 9:40 PM
-
-
-for this example I don´t see any negative value
-
-My bad, please check now by Kumar, Gaurav
-8/13 10:14 PM
-Kumar, Gaurav
-
-My bad, please check now
-
-Thursday, August 14
-I talked with Magued I had to do some chang... by Napoli, Valeria
-Napoli, Valeria
-8/14 12:17 AM
-
-
-I talked with Magued I had to do some changes. I implemented the changes in SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK_IN_SEC . 
-
-Changes are: 
-
-I renamed the column views to  TIME_TAKEN_IN_SEC , TIME_TAKEN_WH_TASK_IN_SEC.
-I renamed INDIRECT_TIME to WAITING_MOVING_TIME_IN_SEC 
-I adjusted the formula for INDIRECT_TIME_IN_SEC  to  IFF(TIME_TAKEN_IN_SEC <= COALESCE(MAX_TASK_DURATION*60, 0), 0 ,TIME_TAKEN_IN_SEC - COALESCE(MAX_TASK_DURATION*60, 0) )AS INDIRECT_TIME_IN_SEC after talk with Magued.
-Could you please implement thse changes in ... by Napoli, Valeria
-Napoli, Valeria
-8/14 1:11 AM
-
-
-Could you please implement thse changes in the target table also and load the data?
-
-I'm still testing  Smile  apoligies by send... by Napoli, Valeria
-Napoli, Valeria
-8/14 1:37 AM
-
-
-I'm still testing 🙂 apoligies by send this in parts ...  DIRECTION formula also adjusted  in the specification > - > 
-
- 
-
-   CASE 
-      WHEN R.PROCTY = '3030' THEN 'REPLENISHMENT'
-      WHEN R.PROCTY LIKE '1%' THEN 'INBOUND'
-
-       WHEN R.PROCTY LIKE '2%' THEN 'OUTBOUND'
-      ELSE 'OTHERS'
-    END AS DIRECTION
-
-As a summary  we can use view V_TD_GBL_SC_... by Napoli, Valeria
-Napoli, Valeria
-8/14 1:54 AM
-
-
-As a summary  we can use view V_TD_GBL_SC_WMS_WAREHOUSE_TASK_IN_SEC  to fill the target table. 
-
-We have to add the changes in the column name in the target table. 
-
- 
-
-Can we create the summary view (V_TD_GBL_SC_WMS_OPERATOR_PERFORMANCE) on top of table T_TD_GBL_SC_WMS_WAREHOUSE_TASK ?
-
-Magued told me that have the aggregation version will help him with the validation
-
- .
-
-Hi Napoli,   Valeria by Kumar, Gaurav
-8/14 12:07 PM
-Kumar, Gaurav
-
-Hi Napoli, Valeria
-
-I have created below objects: SC_LOG.INT_WM... by Kumar, Gaurav
-8/14 12:08 PM
-Edited
-Kumar, Gaurav
-
-I have created below objects:
-
-SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
-SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
-SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_OPERATOR_PERFORMANCE
-
-
-❤️
-1 Heart reaction.
-
-But i would need some clarifications from y... by Kumar, Gaurav
-8/14 12:09 PM
-Kumar, Gaurav
-
-But i would need some clarifications from you on V_TD_GBL_SC_WMS_OPERATOR_PERFORMANCE as the column names in the BRD was not matching, so you can review once if the columns which I used to create these views are the desired one's
-
-Hi Vale, Sorry there was network issues fro... by Kumar, Gaurav
-8/14 5:28 PM
-Kumar, Gaurav
-
-Hi Vale, Sorry there was network issues from my end, just wanted to check if the time taken in warehouse task development is not coming to me as there are changes done by Magued , which is extending this development timeline. Just to make sure it is not making negative impact on my development ETA and has been communicated to Vireshwar
-
-Hi Gaurav by Napoli, Valeria
-Napoli, Valeria
-8/14 5:39 PM
-
-
-Hi Gaurav
-
-quick call? by Napoli, Valeria
-Napoli, Valeria
-8/14 5:39 PM
-
-quick call?
-
-I lost you by Napoli, Valeria
-Napoli, Valeria
-8/14 5:43 PM
-
-I lost you
-
-call me back once you can. I need the scrip... by Napoli, Valeria
-Napoli, Valeria
-8/14 5:44 PM
-
-call me back once you can. I need the script that you created to load the table
-
-sorry network issue at my end due to heavy ... by Kumar, Gaurav
-8/14 5:45 PM
-Kumar, Gaurav
-
-sorry network issue at my end due to heavy rain
-
-Sorry for the disturbance by Kumar, Gaurav
-8/14 5:51 PM
-Kumar, Gaurav
-
-Sorry for the disturbance
-
-I am using below script for now by Kumar, Gaurav
-8/14 5:51 PM
-Kumar, Gaurav
-
-I am using below script for now
-
-drop table SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_W... by Kumar, Gaurav
-8/14 5:51 PM
-Kumar, Gaurav
-
-drop table SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_WAREHOUSE_TASK;
-CREATE OR REPLACE TABLE SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_WAREHOUSE_TASK
-AS
-SELECT * FROM SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
-Let me know if you want to connect by Kumar, Gaurav
-8/14 5:51 PM
-Kumar, Gaurav
-
-Let me know if you want to connect
-
-Begin Reference, Sorry for the disturbance,... by Napoli, Valeria
-Napoli, Valeria
-8/14 6:00 PM
-
-
-Kumar, Gaurav
-8/14/2025 5:51 PM
-Sorry for the disturbance
-no worries
-
-Can I show something? by Napoli, Valeria
-Napoli, Valeria
-8/14 6:02 PM
-
-Can I show something?
-
-Magued wants to have a count of the source ... by Napoli, Valeria
-Napoli, Valeria
-8/14 6:04 PM
-
-Magued wants to have a count of the source handing units
-
-what  I told him is in the agregated view w... by Napoli, Valeria
-Napoli, Valeria
-8/14 6:05 PM
-
-what  I told him is in the agregated view we have the count
-
-but he insisted on have a column with a 1 f... by Napoli, Valeria
-Napoli, Valeria
-8/14 6:15 PM
-
-
-but he insisted on have a column with a 1 for each distinct source handling unit... in the same Handling unit two times put 0.5 instead of one... 
-
-you want to connect? by Kumar, Gaurav
-8/14 6:53 PM
-Kumar, Gaurav
-
-you want to connect?
-
-are you available? by Napoli, Valeria
-Napoli, Valeria
-8/14 6:53 PM
-
-
-are you available?
-
-Friday, August 15
-Hi Gaurav by Napoli, Valeria
-Napoli, Valeria
-8/15 6:25 PM
-
-
-Hi Gaurav
-
-I had a call with Magued yesterday by Napoli, Valeria
-Napoli, Valeria
-8/15 6:25 PM
-
-I had a call with Magued yesterday
-
-I changed formula of waiting_moving_time in... by Napoli, Valeria
-Napoli, Valeria
-8/15 6:26 PM
-
-I changed formula of waiting_moving_time in the view SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
-please update your SQL with hte dev version by Napoli, Valeria
-Napoli, Valeria
-8/15 6:27 PM
-
-please update your SQL with hte dev version
-
-secod thing to check -> I'm doing the analy... by Napoli, Valeria
-Napoli, Valeria
-8/15 6:33 PM
-
-
-secod thing to check -> I'm doing the analysis but I'm no able to identify the issue 
-
-this query is giving us 15 records -> ->  S... by Napoli, Valeria
-Napoli, Valeria
-8/15 6:34 PM
-
-this query is giving us 15 records -> -> 
-
-SELECT * FROM  SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-WHERE warehouse_number = 'BE09'
-AND (CONFIRMED_DATE = '2025-08-01' or CONFIRMED_DATE = '2025-08-01' )
-and  confirmed_by = 'U16074'
-
-but it is incorrect it shoud be 419 rows by Napoli, Valeria
-Napoli, Valeria
-8/15 6:34 PM
-
-but it is incorrect it shoud be 419 rows
-
--i think that the issue is with the shift  by Napoli, Valeria
-Napoli, Valeria
-8/15 6:49 PM
-
-
--i think that the issue is with the shift 
-
-but I'm not able to find it by Napoli, Valeria
-Napoli, Valeria
-8/15 6:50 PM
-
-but I'm not able to find it
-
-Monday, August 18
-Hi Gaurav by Napoli, Valeria
-Napoli, Valeria
-8/18 5:24 PM
-
-
-Hi Gaurav
-
-good afternoon by Napoli, Valeria
-Napoli, Valeria
-8/18 5:24 PM
-
-good afternoon
-
-did you have the chance to see the issue ra... by Napoli, Valeria
-Napoli, Valeria
-8/18 5:26 PM
-
-did you have the chance to see the issue raised by Magued
-
-hi Gaurav, apologies by bothering you , but... by Napoli, Valeria
-Napoli, Valeria
-8/18 6:58 PM
-
-
-hi Gaurav, apologies by bothering you , but could you please send me an update?
-
-Magued is starting his holidays in the next... by Napoli, Valeria
-Napoli, Valeria
-8/18 6:58 PM
-
-Magued is starting his holidays in the next days and he is needs to close the testing before it 😧
-
-Hi Vale by Kumar, Gaurav
-8/18 6:59 PM
-Kumar, Gaurav
-
-Hi Vale
-I am just looking into the record issue. Gi... by Kumar, Gaurav
-8/18 6:59 PM
-Kumar, Gaurav
-
-I am just looking into the record issue. Give me sometime and we can connect on same
-
-👍
-1 Like reaction.
-
-Tuesday, August 19
-Hi Gaurav, good afternoon by Napoli, Valeria
-Napoli, Valeria
-8/19 3:38 PM
-
-
-Hi Gaurav, good afternoon
-
-I'm joining in 2 minutes by Napoli, Valeria
-Napoli, Valeria
-8/19 3:39 PM
-
-I'm joining in 2 minutes
-
-Sure by Kumar, Gaurav
-8/19 3:39 PM
-Kumar, Gaurav
-
-Sure
-
-Are you available to join with Magued and m... by Napoli, Valeria
-Napoli, Valeria
-8/19 5:57 PM
-
-
-Are you available to join with Magued and me?
-
-yes by Kumar, Gaurav
-8/19 5:58 PM
-Kumar, Gaurav
-
-yes
-
-ok we are ending other call  by Napoli, Valeria
-Napoli, Valeria
-8/19 5:58 PM
-
-
-ok we are ending other call 
-
-Wednesday, August 20
-  Kumar,   Gaurav  coud you please add fiel... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:07 AM
-
-
- Kumar, Gaurav coud you please add field confirmed_at_wh in table SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
-Done by Kumar, Gaurav
-8/20 2:09 AM
-Kumar, Gaurav
-
-Done
-
-
-❤️
-1 Heart reaction.
-
-you can do it tomorrow by Napoli, Valeria
-Napoli, Valeria
-8/20 2:11 AM
-
-
-you can do it tomorrow
-
-I send you the messages to don't forget it  by Napoli, Valeria
-Napoli, Valeria
-8/20 2:11 AM
-
-I send you the messages to don't forget it 
-
-No worries, i have created it Smile by Kumar, Gaurav
-8/20 2:11 AM
-Kumar, Gaurav
-
-No worries, i have created it 🙂
-
-I am looking into magued messages by Kumar, Gaurav
-8/20 2:12 AM
-Kumar, Gaurav
-
-I am looking into magued messages
-
-he is using warehouse operator view that it... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:13 AM
-
-
-he is using warehouse operator view that it is on top of the table 
-
-we need to refresh table data  by Napoli, Valeria
-Napoli, Valeria
-8/20 2:14 AM
-
-we need to refresh table data 
-
-this is why I sent him same query on top of... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:14 AM
-
-this is why I sent him same query on top of the view
-
-oh ok, that's why for the first use case i ... by Kumar, Gaurav
-8/20 2:14 AM
-Kumar, Gaurav
-
-oh ok, that's why for the first use case i can see 356 records
-
- 
-
-image
-
-but if you execute this code  by Napoli, Valeria
-Napoli, Valeria
-8/20 2:15 AM
-
-
-but if you execute this code 
-
-SELECT SUM (TOTAL_HU) FROM ( SELECT D... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:15 AM
-
-SELECT SUM (TOTAL_HU)
-FROM (
-SELECT
-DISTINCT
-    CC_SOURCE_SYSTEM,
-    WAREHOUSE_NUMBER AS WAREHOUSE_ID,
-    CONFIRMED_BY AS OPERATOR,
-    CONFIRMED_DATE,
-    CONFIRMED_DATE_WH,
-    DIRECTION,
-    COUNT(DISTINCT SOURCE_HU) AS TOTAL_HU,
-    SUM(TIME_TAKEN_IN_SEC) AS TOTAL_TIME_TAKEN,
-    SUM(TIME_TAKEN_WH_TASK_IN_SEC) AS TOTAL_TIME_TAKEN_TASK,
-    SUM(INDIRECT_TIME_IN_SEC) AS TOTAL_INDIRECT_TIME
-FROM
-    SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-    where operator = 'F12569' AND WAREHOUSE_NUMBER = 'JK09' AND CONFIRMED_DATE_WH = '2025-07-15'
-GROUP BY
-    CC_SOURCE_SYSTEM,
-    WAREHOUSE_NUMBER,
-    CONFIRMED_BY,
-    CONFIRMED_DATE,
-    CONFIRMED_DATE_WH, 
-    DIRECTION);
-
-it give us 228 by Napoli, Valeria
-Napoli, Valeria
-8/20 2:15 AM
-
-it give us 228
-
-and it is matching with the excel that he s... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:16 AM
-
-and it is matching with the excel that he sent me 
-
-Ok, I was wondering how are we calculating ... by Kumar, Gaurav
-8/20 2:18 AM
-Kumar, Gaurav
-
-Ok, I was wondering how are we calculating total HU 🙂
-
-Then do we have any other open issues apart from what we discussed earlier
-
-this is why I'm asking him the expected val... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:19 AM
-
-
-this is why I'm asking him the expected value 
-
-if you dowload the excels that he sent us by Napoli, Valeria
-Napoli, Valeria
-8/20 2:19 AM
-
-if you dowload the excels that he sent us
-
-and do a distint on field Dest. Handling Un... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:20 AM
-
-and do a distint on field Dest. Handling Unit
-
-you get same value that we are getting in h... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:20 AM
-
-you get same value that we are getting in hour view 
-
-ok by Kumar, Gaurav
-8/20 2:20 AM
-Kumar, Gaurav
-
-ok
-
-cool by Kumar, Gaurav
-8/20 2:20 AM
-Kumar, Gaurav
-
-cool
-
-but I'm not sure if he is expecting that va... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:20 AM
-
-
-but I'm not sure if he is expecting that value 
-
-hmm..ok by Kumar, Gaurav
-8/20 2:20 AM
-Kumar, Gaurav
-
-hmm..ok
-
-can re refresh de data on the table from th... by Napoli, Valeria
-Napoli, Valeria
-8/20 2:21 AM
-
-
-can re refresh de data on the table from the view
-
-For now i am using this   CREATE OR REPLACE... by Kumar, Gaurav
-8/20 2:42 AM
-Kumar, Gaurav
-
-For now i am using this
-
- 
-
-CREATE OR REPLACE TABLE SC_LOG.INT_WMS.T_TD_GBL_SC_WMS_WAREHOUSE_TASK
-AS
-SELECT * FROM SC_LOG.INT_WMS.V_TD_GBL_SC_WMS_WAREHOUSE_TASK
-
- 
-
-if you want, i can schedule it for some interval, but it will simply eat up the resources. instead we can run it whenever we do change. or et me know if you want me to schedule it
-
-Hey Vale by Kumar, Gaurav
-8/20 2:46 AM
-Kumar, Gaurav
-
-Hey Vale
-
-Can you please provide me the filter condit... by Kumar, Gaurav
-8/20 2:47 AM
-Kumar, Gaurav
-
-Can you please provide me the filter condition for which we need to see for early shift issue
-
-yes  by Napoli, Valeria
-Napoli, Valeria
-8/20 2:48 AM
-
-
-yes 
-
-we have two cases to test  by Napoli, Valeria
-Napoli, Valeria
-8/20 2:49 AM
-
-we have two cases to test 
-
-has context menu
-
-
+2025-08-13
+
+Parameter unit ambiguity: PA_TO for PROCESS='WMS' AND CATE='IND_TIME' confirmed as minutes; discussion to convert to seconds in the view/table led to inconsistency risk.
+Negative times verification: Initial OG09/F61319 test showed no negatives, then was corrected—indicating test query/config confusion.
+Naming/schema churn begins: Early use of V_TD_GBL_SC_WMS_WAREHOUSE_TASK_IN_SEC vs later canonical view/table caused drift.
+2025-08-14
+
+Spec/view drift: Renamed columns (TIME_TAKEN_IN_SEC, TIME_TAKEN_WH_TASK_IN_SEC), renamed INDIRECT_TIME to WAITING_MOVING_TIME_IN_SEC, and adjusted INDIRECT_TIME_IN_SEC formula; DIRECTION logic updated. Table not yet aligned.
+Objects created with spec mismatch: V_TD_GBL_SC_WMS_WAREHOUSE_TASK, T_TD_GBL_SC_WMS_WAREHOUSE_TASK, V_TD_GBL_SC_WMS_OPERATOR_PERFORMANCE created; BRD vs implementation column names misaligned.
+Loading approach: Table loaded via CTAS from view; process clarity needed for refresh cadence.
+New requirement for HU metric: Need per-task HU indicator with 1 per distinct source HU and 0.5 for repeats.
+2025-08-15
+
+Formula churn: WAITING_MOVING_TIME_IN_SEC changed again in the view; downstream SQL needed updates.
+Record count discrepancy: BE09/U16074 2025‑08‑01 returned 15 rows vs expected 419; suspected shift logic but root cause unclear.
+2025-08-18
+
+Stakeholder deadline pressure: Urgent validation required before holidays; status uncertainty on open issues.
+2025-08-20
+
+Missing field in table: CONFIRMED_AT_WH requested and added to table after the fact.
+Stale table vs fresh view: Stakeholder using view-on-table saw outdated results; table refresh needed to reflect latest view logic.
+HU totals validation: DISTINCT SOURCE_HU totals matched Excel, but expectation alignment still unclear.
+Operational cadence: Asked to schedule table refresh; concern about resource usage—no automated refresh defined.
+Early-shift test setup: Requested concrete filters to reproduce early-arrival issues.
+2025-08-22
+
+Idle/non-operational windows: 03:30–05:30 gaps affecting shift mapping.
+Shift hours must be parameterized: 12-hour static assumption not viable across sites.
+ROW_NUMBER partitioning bug: PARTITION BY ... , CONFIRMED_DATE reset RN daily; removing date fixed first-task identification in tests.
+2025-08-26–27
+
+Limited testing of new objects: New view/table noted as not extensively tested.
+HU_COUNT gap closed: HU_COUNT added to view/table after request.
+Data recency confusion: Some reviewers not seeing latest outputs.
+Month filter ordering issue: LIKE '2025-08%' produced out-of-order rows (Aug 10 before Aug 06), skewing durations.
+2025-08-28–29
+
+Early arrival handling flaw: First row anchored to shift start produced negative times (e.g., −5987 on 2025‑08‑10).
+Multiple “first tasks”: RN logic marked two first tasks in a day (BE09/F33314, 2025‑08‑11..13).
+24-hour sessions inferred: Cross-day stitching/tz confusion made operators appear to work 24 hours (BI09); close-shift 2025‑08‑02 10:05:33 should map to 2025‑08‑03 shift but didn’t; errors propagated to subsequent shifts.
+Recommendation: Base on WH timezone and CONFIRMED_AT_WH to improve accuracy.
+2025-09-01–02
+
+Timezone conversion/source field errors: Used CC_TIMEZONE instead of ZCOMMENT; inserted TZs like “CST - America/Chicago” or “UTC‑7” (non‑IANA); corrected to use proper IANA zones.
+Final shift start misassignment:
+BE09/C20976: 2025‑08‑07 06:19 arrival (early for 07:00) mapped to prior evening 2025‑08‑06 19:00.
+PA09/U31163: final shift start still incorrect across cases.
+Root cause area: “One shift per operator” selection causing wrong FINAL_SHIFT_SESSION_ID.
+2025-09-03
+
+Acknowledgment: Prior diagnosis confirmed (“you were right”).
+Cross-entity examples for reproduction
+
+F51839: 2025‑08‑10 early arrival negatives; month filter ordering anomaly.
+U16074 @ BE09: 2025‑08‑01 record shortfall (15 vs 419).
+F33314 @ BE09: 2025‑08‑11..13 duplicate “first task”.
+C20976 @ BE09: 2025‑08‑07 early arrival misassigned to 2025‑08‑06 evening.
+U31163 @ PA09: incorrect final shift start in August range.
+BI09: 24h session artifacts around 2025‑08‑02..03.
+
+2025-08-22
+
+Idle/non-operational windows: 03:30–05:30 noted impacting shift mapping (00:45).
+Shift hours must be parameterized: 12-hour static assumption rejected (00:48).
+ROW_NUMBER partitioning bug: PARTITION BY ... , CONFIRMED_DATE caused daily RN resets; proposed removing date (00:51–00:55). Fix tested by removing date; worked for 1–2 operators (01:50–02:13).
+2025-08-26
+
+New objects created but lightly tested: V_TD_GBL_SC_WMS_WAREHOUSE_TASK_FINAL and T_TD_GBL_SC_WMS_WAREHOUSE_TASK_FINAL (22:14–22:15).
+2025-08-27
+
+HU_COUNT missing then added: requested (22:09); formula confirmed (22:13); added to view/table (22:19).
+Data recency confusion: stakeholders possibly not seeing latest outputs (22:39–22:42).
+Month filter ordering issue: Using LIKE '2025-08%' for F51839 yielded out-of-order records (Aug 10 before Aug 06), skewing time deltas (23:37).
+2025-08-28
+
+Early arrival handling flaw → negative times: For F51839 on 2025-08-10, first task at 13:50:13 vs shift 03:30/15:30; waiting/moving time −5987 because first-row logic anchored to shift start even when arriving early (00:12–00:18).
+Two “first tasks” on same day: RN/first-task logic misflagging; BE09/F33314 over 2025-08-11..13 (00:53–01:36).
+2025-08-29
+
+24-hour sessions inferred (stitching across days/TZ): Aggregate showed 24h for BI09 operators (01:10–01:39).
+Timezone mismatch in parameters: Business provided shift table in local time; BI09 is EST, but UTC assumptions applied; recommended adjusting parameter table (02:01).
+Shift boundary misassignment persists: Example where close shift 2025-08-02 10:05:33 should map to 2025-08-03 11:30 (local), but treated as same shift; error propagates to next shifts (02:10–02:20).
+Another WH shows same pattern: Additional operator example exhibiting stitching (02:36).
+Recommendation: Use WH timezone-based shifts and CONFIRMED_AT_WH for calculations (18:49).
+2025-09-01
+
+Timezone conversion/source field errors: Used CC_TIMEZONE instead of ZCOMMENT; inserted TZs like “CST - America/Chicago” and “UTC-7” (ambiguous); fix acknowledged (20:53–21:32; corrected later).
+Dynamic timezone worksheet shared: For Snowflake conversion references (21:04–21:08, 21:37).
+WH timezone mapping provided: E.g., JK09/MA09/PA09… America/Chicago; BI09/FA09/BE09… America/New_York; NS09 listed as UTC-7 (needs IANA) (21:17–21:18).
+Parameter inserts executed: Mixed formats; later recognized formatting issue (21:32).
+2025-09-02
+
+Final shift start misassignment (morning mapped to prior evening):
+BE09/C20976: Confirmed at 2025-08-07 06:19 (early for 07:00 shift), but FINAL_SHIFT_START_TS = 2025-08-06 19:00 (01:41–01:43).
+PA09/U31163: “Final shift start still incorrect” (00:38).
+Root cause direction: “One shift per operator” selection logic implicated; needs rework (17:25). Impact: wrong FINAL_SHIFT_SESSION_ID (20:17).
+Source TZ fix applied: Switched to ZCOMMENT (00:18–00:24).
+2025-09-03 (Yesterday)
+
+Validation/ack: “ey.. you were right” confirming earlier diagnosis (00:48).
+Cross-date references (for reproductions)
+
+U35246: Analyze CONFIRMED_WH_TIMESTAMP 2025-08-12 to 2025-08-16 (2025-09-01 17:09).
+F51839: Month filter anomaly and early-arrival negative time on 2025-08-10.
+F33314 @ BE09: Multiple “first tasks” across 2025-08-11..13.
+C20976 @ BE09: Early arrival 2025-08-07 06:19 vs 07:00 shift misassigned to 2025-08-06 19:00.
+U31163 @ PA09: Final shift start incorrect across 2025-08 range.
+BI09: 24h session artifacts around 2025-08-02..03.
