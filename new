@@ -14,7 +14,7 @@ WITH SHIFT_PARAMS AS (
   SELECT
     LGNUM,
     SRC_SYS,
-    TO_CHAR(TO_TIME(SHIFT_START_RAW) + INTERVAL '12' HOUR, 'HH24:MI') AS SHIFT_START_RAW,
+    TO_CHAR(TIMEADD('HOUR', 12, TO_TIME(SHIFT_START_RAW)), 'HH24:MI') AS SHIFT_START_RAW,
     TIMEZONE,
     'NIGHT' AS SHIFT_TYPE
   FROM base
@@ -105,7 +105,21 @@ SHIFT_CANDIDATES AS (
              'YYYY-MM-DD HH24:MI'
            ) > T.CONFIRMED_AT_TS
       THEN 1 ELSE 0
-    END AS IS_FUTURE_WINDOW
+    END AS IS_FUTURE_WINDOW,
+    CASE
+      WHEN T.CONFIRMED_AT_TS < TO_TIMESTAMP(
+                                 TO_CHAR(DATEADD(DAY, d.offset, T.CONFIRMED_LOCAL_DATE), 'YYYY-MM-DD') || ' ' || S.SHIFT_START_RAW,
+                                 'YYYY-MM-DD HH24:MI'
+                               )
+       AND T.CONFIRMED_AT_TS >= DATEADD(
+                                 MINUTE, -60,
+                                 TO_TIMESTAMP(
+                                   TO_CHAR(DATEADD(DAY, d.offset, T.CONFIRMED_LOCAL_DATE), 'YYYY-MM-DD') || ' ' || S.SHIFT_START_RAW,
+                                   'YYYY-MM-DD HH24:MI'
+                                 )
+                               )
+      THEN 1 ELSE 0
+    END AS IS_EARLY_WINDOW
   FROM TRANSFORMED T
   JOIN SHIFT_PARAMS S
     ON T.LGNUM = S.LGNUM AND T.CC_SOURCE_SYSTEM = S.SRC_SYS
@@ -130,6 +144,7 @@ CLOSEST_SHIFT AS (
             WHEN CONFIRMED_AT_TS BETWEEN SHIFT_START_TS AND SHIFT_END_TS THEN 2
             ELSE 3
           END,
+          IS_EARLY_WINDOW DESC,
           IS_FUTURE_WINDOW,
           SHIFT_DIFF_MIN,
           SHIFT_START_TS
