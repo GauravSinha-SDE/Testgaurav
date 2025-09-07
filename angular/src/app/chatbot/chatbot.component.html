@@ -1,0 +1,7 @@
+<div class="chat-container">
+  <h2>AI Travel Planner Chatbot</h2>
+  <textarea [(ngModel)]="userQuery" placeholder="Plan me a luxurious honeymoon trip to Switzerland for 7.5 days under Rs 2,00,000"></textarea>
+  <button (click)="sendQuery()" [disabled]="loading">Ask</button>
+  <div class="response" *ngIf="response"><pre>{{ response }}</pre></div>
+  <div *ngIf="loading">Loading...</div>
+</div>
