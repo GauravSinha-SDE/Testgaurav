@@ -1,127 +1,144 @@
-2025-08-13
-Category: Config - Units
-Detail: Confirmed PA_TO for PROCESS='WMS' AND CATE='IND_TIME' is in minutes; decision to convert to seconds only in calculations to avoid changing source semantics.
-Root cause: Unit ambiguity.
-Status: Closed. Next: Audit usages for consistent seconds conversion.
-Category: Testing - Data checks
-Detail: OG09/F61319 initial check showed no negatives; later correction indicated earlier filter/view mismatch.
-Warehouse/Operator: OG09 / F61319
-Status: Closed. Next: Standardize test filters and pin in a shared worksheet.
-2025-08-14
-Category: Spec/Schema drift
-Detail: Renamed columns to TIME_TAKEN_IN_SEC, TIME_TAKEN_WH_TASK_IN_SEC; INDIRECT_TIME renamed to WAITING_MOVING_TIME_IN_SEC; adjusted INDIRECT_TIME_IN_SEC logic; updated DIRECTION logic.
-Root cause: Frequent spec updates vs BRD causing drift from table schema.
-Status: Open. Next: Propagate to target table and dependent views.
-Category: Implementation - Objects
-Detail: Created V_TD_GBL_SC_WMS_WAREHOUSE_TASK, T_TD_GBL_SC_WMS_WAREHOUSE_TASK, V_TD_GBL_SC_WMS_OPERATOR_PERFORMANCE; columns not fully aligned with BRD.
-Status: Open. Next: Align operator performance view to BRD.
-Category: Load/Refresh
-Detail: Table loaded via CTAS from view; no refresh cadence defined, risking stale table as view evolves.
-Status: Open. Next: Define refresh schedule or use materialized strategy.
-Category: Metric - HU
-Detail: Requirement to mark 1 per distinct SOURCE_HU, 0.5 for repeats.
-Status: Closed (HU_COUNT added). Next: Validate across directions/bins.
-2025-08-15
-Category: Formula change
-Detail: WAITING_MOVING_TIME_IN_SEC formula updated per discussion with Magued.
-Status: Closed. Next: Cross-check downstream reports.
-Category: Data completeness
-Detail: BE09/U16074 for 2025-08-01 returned 15 rows vs expected 419; suspected shift mapping/filtering.
-Warehouse/Operator: BE09 / U16074
-Status: Open. Next: Reproduce from /SCWM/ORDIM_C; verify filters and shift windows.
-2025-08-18
-Category: Project - Coordination
-Detail: Urgent validation needed before stakeholder holidays; request for status updates.
-Status: Open. Next: Daily status and prioritized defect tracking.
-2025-08-20
-Category: Schema - Field gap
-Detail: CONFIRMED_AT_WH missing in table; added upon request.
-Status: Closed. Next: Backfill and validate population from view.
-Category: Staleness - View vs Table
-Detail: Stakeholder using view-on-table saw outdated data; required table refresh to reflect latest logic.
-Status: Open. Next: Automate refresh or point reports to canonical view.
-Category: Validation - HU totals
-Detail: JK09/F12569 on 2025-07-15 returned DISTINCT HU total 228, matching Excel.
-Status: Closed. Next: Document HU definition.
-Category: Ops - Scheduling
-Detail: Asked to schedule table refresh; resource usage concerns; no job created.
-Status: Open. Next: Evaluate incremental loads/off-peak schedule.
-Category: Repro guidance
-Detail: Need canonical filters to reproduce early-arrival issues.
-Status: Open. Next: Maintain shared worksheet with canonical filters.
-2025-08-22
-Category: Shift windows
-Detail: Idle/non-operational window 03:30–05:30 affects shift mapping.
-Status: Open. Next: Model non-working windows in parameters and logic.
-Category: Config - Shift duration
-Detail: 12-hour static shift assumption not viable; must parameterize per warehouse.
-Status: Open. Next: Store per-WH shift starts/durations.
-Category: SQL - RN partition
-Detail: PARTITION BY ... , CONFIRMED_DATE reset RN daily; removing date fixed “first task” identification in tests.
-Status: Closed. Next: Broaden multi-day operator testing.
-2025-08-26
-Category: Delivery - New objects
-Detail: Created FINAL variants V_TD_GBL_SC_WMS_WAREHOUSE_TASK_FINAL and T_TD_GBL_SC_WMS_WAREHOUSE_TASK_FINAL; not extensively tested.
-Status: Open. Next: Add unit test queries and scenario validations.
-2025-08-27
-Category: Data freshness
-Detail: Some reviewers not seeing latest data; confusion between versions/environments.
-Status: Open. Next: Align on canonical objects and communicate locations.
-Category: Ordering - Date filter
-Detail: Using LIKE '2025-08%' produced out-of-order rows (F51839 showed Aug 10 before Aug 06), skewing time deltas.
-Status: Open. Next: Use explicit ORDER BY on timestamps; avoid LIKE for date ranges.
-2025-08-28
-Category: First-task logic / Early arrival
-Detail: First row anchored to shift start even when operator arrived early; negative waiting/moving time observed (−5987) on 2025-08-10.
-Operator: F51839
-Status: Open. Next: If EARLY, base deltas on arrival instead of shift start.
-Category: RN - Multiple firsts
-Detail: RN logic marked multiple “first tasks” for BE09/F33314 across 2025-08-11..13.
-Status: Open. Next: Stabilize ORDER BY; include TANUM as tiebreaker.
-2025-08-29
-Category: Anomaly - 24h sessions
-Detail: Operators at BI09 appeared to work 24 hours due to cross-day stitching/timezone confusion.
-Status: Open. Next: Constrain session windows to 12h; correct TZ alignment.
-Category: Timezone - Local vs UTC
-Detail: Business provided shift table in local TZ; BI09 is EST, but UTC assumptions applied → misalignment.
-Status: Open. Next: Store IANA TZ per WH; convert with CONFIRMED_AT_WH.
-Category: Shift boundary selection
-Detail: Close shift 2025-08-02 10:05:33 should map to 2025-08-03 morning shift (early arrival), but logic incorrectly grouped with prior day; propagated across shifts.
-Status: Open. Next: Refine priority around early arrivals across day boundary.
-Category: Design - Timestamp basis
-Detail: Recommendation to base calculations on warehouse-local timestamps and CONFIRMED_AT_WH.
-Status: Open. Next: Refactor to use local fields consistently.
-2025-09-01
-Category: TZ mapping - Source field
-Detail: Used CC_TIMEZONE instead of ZCOMMENT for source TZ; corrected; dynamic timezone worksheet shared.
-Status: Closed. Next: Backfill conversions if needed.
-Category: TZ mapping - Values format
-Detail: Parameter inserts used non-IANA labels (e.g., “CST - America/Chicago”, “UTC-7”) risking DST ambiguity; NS09 noted.
-Status: Open. Next: Normalize to IANA zones (e.g., America/Chicago, America/New_York).
-2025-09-02
-Category: Final shift start - Incorrect
-Detail: PA09/U31163: FINAL_SHIFT_START_TS still incorrect across August cases.
-Status: Open. Next: Debug selection join to selected operator shifts.
-Category: Final shift start - Prior evening
-Detail: BE09/C20976 arrived 2025-08-07 06:19 (early for 07:00) mapped to 2025-08-06 19:00 (previous evening).
-Status: Open. Next: If early within threshold, choose same-day morning shift.
-Category: Session selection - One per operator
-Detail: “One shift per operator per day” selection implicated in wrong FINAL_SHIFT_SESSION_ID; enforcement gaps.
-Status: Open. Next: Enforce one session/operator/day with robust keys.
-2025-09-03
-Category: Validation - Confirmation
-Detail: “you were right” acknowledgment confirming earlier diagnosis on shift/session logic issues.
-Status: Closed. Next: Proceed to implement fixes above.
-Repro highlights embedded above:
+Perfect 👌 thanks for sharing the exact structures!
+You’ve already defined **physical dimension tables** and **fact views** that consume them — this matches a clean **SCD Type 1 star schema** approach.
 
-F51839: 2025-08-10 early arrival negative time and month-LIKE ordering anomaly.
+Let me refine and complete this setup for you:
 
-U16074 @ BE09: 2025-08-01 record shortfall (15 vs 419).
+---
 
-F33314 @ BE09: 2025-08-11..13 multiple “first tasks”.
+### ✅ Dimension Tables (SCD1 overwrite)
 
-C20976 @ BE09: 2025-08-07 06:19 mapped to 2025-08-06 19:00.
+You already have:
 
-U31163 @ PA09: final shift start incorrect across August.
+**1. Supplier Site Profile**
 
-BI09: 24h session artifacts around 2025-08-02..03.
+```sql
+CREATE OR REPLACE TABLE DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF (
+    Supplier_Site_Profile_Key BIGINT AUTOINCREMENT PRIMARY KEY, -- surrogate key
+    ETQ_SSP_ID                VARCHAR(50) NOT NULL,  -- business key
+    ETQ_SSP_NAME_ID           VARCHAR(255),
+    EIQ_RISK_SCORE            DECIMAL(10,2),
+    SAP_VENDORNAME_ID         VARCHAR(50),  -- FK to Vendor (business key)
+    ETQ_APPROVAL_STATUS       VARCHAR(50),
+    SITE_OVERALL_RISK         VARCHAR(50),
+    EMPLOYEE_COUNT            INT,
+    CREATED_DATE              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    LAST_UPDATED_DATE         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**2. ECM Vendor**
+
+```sql
+CREATE OR REPLACE TABLE DW.T_DIM_ECM_VENDOR_DEF (
+    SAP_Vendor_Key            BIGINT AUTOINCREMENT PRIMARY KEY, -- surrogate key
+    SAP_Vendor_ID             VARCHAR(50) NOT NULL, -- business key
+    REGION_CODE               VARCHAR(50),
+    SAP_Vendor_Name           VARCHAR(255),
+    Parent_Vendor_Code        VARCHAR(50),
+    Parent_Vendor_Name        VARCHAR(255),
+    ECM_Product_Category      VARCHAR(255),
+    CREATED_DATE              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    LAST_UPDATED_DATE         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+### ✅ Dimension Views (expose user-friendly version)
+
+These are optional but very useful to abstract surrogate keys.
+
+**Supplier Site Profile View**
+
+```sql
+CREATE OR REPLACE VIEW DW.V_DIM_ETQ_SUPPLIER_SITE_PROFILE AS
+SELECT 
+    Supplier_Site_Profile_Key,
+    ETQ_SSP_ID,
+    ETQ_SSP_NAME_ID,
+    EIQ_RISK_SCORE,
+    SAP_VENDORNAME_ID,
+    ETQ_APPROVAL_STATUS,
+    SITE_OVERALL_RISK,
+    EMPLOYEE_COUNT
+FROM DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF;
+```
+
+**ECM Vendor View**
+
+```sql
+CREATE OR REPLACE VIEW DW.V_DIM_ECM_VENDOR AS
+SELECT 
+    SAP_Vendor_Key,
+    SAP_Vendor_ID,
+    REGION_CODE,
+    SAP_Vendor_Name,
+    Parent_Vendor_Code,
+    Parent_Vendor_Name,
+    ECM_Product_Category
+FROM DW.T_DIM_ECM_VENDOR_DEF;
+```
+
+---
+
+### ✅ Fact Views (already good — just polishing)
+
+**3. Social Compliance Due Diligence**
+
+```sql
+CREATE OR REPLACE VIEW DW.V_FACT_ECM_SOC_COMPL_DUE_DILIGENCE_EVENT AS
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY scd.EVENT_ID) AS Fact_ID,
+    ssp.Supplier_Site_Profile_Key,
+    v.SAP_Vendor_Key,
+    scd.AUDIT_RENEWAL_DATE,
+    scd.SUB_EVENT_SEQUENCE_NUMBER,
+    scd.SUB_EVENT_TYPE,
+    scd.AUDITOR,
+    scd.ASSESSMENT_PROTOCOL,
+    scd.DUE_DILIGENCE_REQUESTER,
+    scd.DUE_DILIGENCE_TYPE,
+    scd.AUDIT_RENEWAL_EXECUTION_STATUS,
+    scd.DUE_DILIGENCE_REQUESTED_DATE,
+    scd.CUSTOMER_DEADLINE_DATE,
+    scd.DUE_DILIGENCE_DATE,
+    scd.FINAL_DD_COMPLETION_DATE,
+    scd.ZERO_TOLERANCE_FINDINGS_COUNT,
+    scd.CRITICAL_FINDINGS_COUNT,
+    scd.MAJOR_1_FINDINGS_COUNT,
+    scd.MINOR_FINDINGS_COUNT,
+    scd.TOTAL_MAJOR_FINDINGS_COUNT,
+    scd.TOTAL_MINOR_FINDINGS_COUNT
+FROM MDS.STAGING.T_ECM_SOCIAL_COMPLIANCE_DUE_DILIGENCE scd
+JOIN DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF ssp
+    ON scd.ETQ_SSP_NAME_ID = ssp.ETQ_SSP_NAME_ID
+JOIN DW.T_DIM_ECM_VENDOR_DEF v
+    ON ssp.SAP_VENDORNAME_ID = v.SAP_Vendor_ID;
+```
+
+**4. Spend Fact**
+
+```sql
+CREATE OR REPLACE VIEW DW.V_FACT_PO_SPEND AS
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY p.SAP_VENDOR_ID, p.SKU_ID, p.Date) AS Fact_ID,
+    v.SAP_Vendor_Key,
+    p.Date AS Spend_Date,
+    p.SKU_ID,
+    p.Spend_in_Dollars
+FROM MDS.STAGING.T_PO_SPEND p
+JOIN DW.T_DIM_ECM_VENDOR_DEF v
+    ON p.SAP_VENDOR_ID = v.SAP_Vendor_ID;
+```
+
+---
+
+### 🔑 Notes
+
+* **SCD1 logic** → When reloading dimensions, overwrite attribute values (e.g., vendor name change just updates the row).
+* **Surrogate keys** (autoincrement) provide stability in fact joins even if business keys change.
+* **Views** → Insulate users from surrogate key complexity, while still letting facts join cleanly to dimensions.
+
+---
+
+👉 Do you also want me to give you the **MERGE (upsert) SQL** for populating these dimension tables with SCD1 logic from staging? That way, every ETL load will keep your dims fresh.
