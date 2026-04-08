@@ -1,144 +1,129 @@
-Perfect 👌 thanks for sharing the exact structures!
-You’ve already defined **physical dimension tables** and **fact views** that consume them — this matches a clean **SCD Type 1 star schema** approach.
-
-Let me refine and complete this setup for you:
-
----
-
-### ✅ Dimension Tables (SCD1 overwrite)
-
-You already have:
-
-**1. Supplier Site Profile**
+Yes — the safest approach is to keep view 1's logic intact and just wrap it, exactly replicating what view 3 was doing but without the intermediate view. Here's that:
 
 ```sql
-CREATE OR REPLACE TABLE DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF (
-    Supplier_Site_Profile_Key BIGINT AUTOINCREMENT PRIMARY KEY, -- surrogate key
-    ETQ_SSP_ID                VARCHAR(50) NOT NULL,  -- business key
-    ETQ_SSP_NAME_ID           VARCHAR(255),
-    EIQ_RISK_SCORE            DECIMAL(10,2),
-    SAP_VENDORNAME_ID         VARCHAR(50),  -- FK to Vendor (business key)
-    ETQ_APPROVAL_STATUS       VARCHAR(50),
-    SITE_OVERALL_RISK         VARCHAR(50),
-    EMPLOYEE_COUNT            INT,
-    CREATED_DATE              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    LAST_UPDATED_DATE         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE OR REPLACE VIEW SC_LOG.REPORTING_WMS.V_TD_GBL_SC_WMS_INVENTORY_ACCURACY(
+    WAREHOUSE_ID            COMMENT 'Warehouse ID',
+    YEAR                    COMMENT 'Year',
+    TIMESTAMP               COMMENT 'Formatted Timestamp (YYYY-MM-DD)',
+    INVENTORY_DOCUMENT      COMMENT 'Inventory Document GUID',
+    UNIT                    COMMENT 'Warehouse Unit',
+    MATERIAL_NUMBER         COMMENT 'Material Number',
+    PRICE_CONTROL_INDICATOR COMMENT 'Price Control Indicator',
+    MOVING_AVERAGE_PRICE    COMMENT 'Moving Average Price',
+    STANDARD_PRICE          COMMENT 'Standard Price',
+    PRICE_UNIT              COMMENT 'Price Unit',
+    CURRENCY_KEY            COMMENT 'Currency Key',
+    TOTAL_DIFFERENCE        COMMENT 'Total Difference For ITEM_TYPE DI Or PR',
+    TOTAL_BOOKED_NUMBER     COMMENT 'Total Booked Number For ITEM_TYPE BO',
+    TOTAL_SUM_BOOKED_NUMBER COMMENT 'Total Sum For Booked Number For ITEM_TYPE BO',
+    TOTAL_COUNTED_NUMBER    COMMENT 'Total Counted Number For ITEM_TYPE CO Or MU',
+    DIFFERENCE_PERCENTAGE   COMMENT 'Percentage Based On DIFF Vs BOOK',
+    CC_SOURCE_SYSTEM        COMMENT 'Source System',
+    CC_TIMEZONE             COMMENT 'Time Zone'
+) COMMENT = 'This View Provides Inventory Accuracy Metrics Based On Document And Quantity Data'
+AS
+SELECT
+    WAREHOUSE_ID,
+    YEAR,
+    TIMESTAMP,
+    INVENTORY_DOCUMENT,
+    UNIT,
+    MATERIAL_NUMBER,
+    PRICE_CONTROL_INDICATOR,
+    MOVING_AVERAGE_PRICE,
+    STANDARD_PRICE,
+    PRICE_UNIT,
+    CURRENCY_KEY,
+    SUM(TOTAL_DIFFERENCE)           AS TOTAL_DIFFERENCE,
+    SUM(TOTAL_BOOKED_NUMBER)        AS TOTAL_BOOKED_NUMBER,
+    SUM(TOTAL_SUM_BOOKED_NUMBER)    AS TOTAL_SUM_BOOKED_NUMBER,
+    SUM(TOTAL_COUNTED_NUMBER)       AS TOTAL_COUNTED_NUMBER,
+    AVG(DIFFERENCE_PERCENTAGE)      AS DIFFERENCE_PERCENTAGE,
+    CC_SOURCE_SYSTEM,
+    CC_TIMEZONE
+FROM (
+    -- View 1 logic preserved exactly
+    SELECT
+        WAREHOUSE_ID,
+        YEAR,
+        TIMESTAMP,
+        INVENTORY_DOCUMENT,
+        UNIT,
+        MATERIAL_NUMBER,
+        PRICE_CONTROL_INDICATOR,
+        MAX(MOVING_AVERAGE_PRICE)   AS MOVING_AVERAGE_PRICE,
+        MAX(STANDARD_PRICE)         AS STANDARD_PRICE,
+        PRICE_UNIT,
+        CURRENCY_KEY,
+        SUM(TOTAL_DIFFERENCE)       AS TOTAL_DIFFERENCE,
+        SUM(TOTAL_BOOKED_NUMBER)    AS TOTAL_BOOKED_NUMBER,
+        SUM(TOTAL_SUM_BOOKED_NUMBER) AS TOTAL_SUM_BOOKED_NUMBER,
+        SUM(TOTAL_COUNTED_NUMBER)   AS TOTAL_COUNTED_NUMBER,
+        LEAST(
+            GREATEST(
+                ROUND(
+                    (1 - ABS(DIV0NULL(SUM(TOTAL_DIFFERENCE), SUM(TOTAL_COUNTED_NUMBER)))) * 100,
+                    2
+                ),
+                -100
+            ),
+            100
+        )                           AS DIFFERENCE_PERCENTAGE,
+        CC_SOURCE_SYSTEM,
+        CC_TIMEZONE
+    FROM (
+        -- Innermost logic preserved exactly
+        SELECT
+            d.WAREHOUSE_ID,
+            d.YEAR,
+            d._TIMESTAMP                            AS TIMESTAMP,
+            dq.INVENTORY_DOCUMENT,
+            dq.ITEM,
+            dq.LINE_ROW_INDEX                       AS LINE,
+            dq.INVENTORY_UNIT_OF_MEASURE            AS UNIT,
+            dq.MATERIAL_NUMBER,
+            vl.PRICE_CONTROL_INDICATOR,
+            vl.MOVING_AVERAGE_PRICE,
+            vl.STANDARD_PRICE,
+            vl.PRICE_UNIT,
+            vl.CURRENCY_KEY,
+            SUM(CASE WHEN dq.STATUS_OF_TABLE_ENTRY = 'DI'
+                THEN dq.INVENTORY_QUANTITY ELSE 0 END)              AS TOTAL_DIFFERENCE1,
+            SUM(CASE WHEN dq.STATUS_OF_TABLE_ENTRY = 'BO'
+                THEN dq.INVENTORY_QUANTITY ELSE 0 END)              AS TOTAL_BOOKED_NUMBER,
+            SUM(CASE WHEN dq.STATUS_OF_TABLE_ENTRY IN ('BO', 'PR')
+                THEN dq.INVENTORY_QUANTITY ELSE 0 END)              AS TOTAL_SUM_BOOKED_NUMBER,
+            SUM(CASE WHEN dq.STATUS_OF_TABLE_ENTRY IN ('CO', 'MU')
+                THEN dq.INVENTORY_QUANTITY ELSE 0 END)              AS TOTAL_COUNTED_NUMBER,
+            CASE
+                WHEN TOTAL_BOOKED_NUMBER = 0
+                  OR TOTAL_BOOKED_NUMBER < TOTAL_COUNTED_NUMBER
+                THEN  TOTAL_DIFFERENCE1
+                ELSE -TOTAL_DIFFERENCE1
+            END                                                     AS TOTAL_DIFFERENCE,
+            dq.CC_SOURCE_SYSTEM,
+            dq.CC_TIMEZONE
+        FROM SC_LOG.INT_UDM_WMS.V_TD_GBL_SC_WMS_INVENTORY_DOCUMENTS_QUANTITIES dq
+        LEFT JOIN (
+            SELECT DISTINCT
+                WAREHOUSE_ID,
+                YEAR,
+                INVENTORY_DOCUMENT,
+                ITEM,
+                TO_DATE(SUBSTR(TO_CHAR(TIMESTAMP), 1, 8), 'YYYYMMDD') AS _TIMESTAMP
+            FROM SC_LOG.INT_UDM_WMS.V_TD_GBL_SC_WMS_INVENTORY_DOCUMENTS
+        ) d
+            ON  d.INVENTORY_DOCUMENT = dq.INVENTORY_DOCUMENT
+            AND d.ITEM               = dq.ITEM
+        LEFT JOIN SC_LOG.INT_UDM_WMS.V_TD_GBL_SC_WMS_INVENTORY_VALUATION vl
+            ON  d.WAREHOUSE_ID = vl.WAREHOUSE_ID
+            AND dq.MATERIAL_ID = vl.MATERIAL_ID
+        WHERE dq.STATUS_OF_TABLE_ENTRY IN ('BO', 'DI', 'PR', 'CO', 'MU')
+        GROUP BY ALL
+    )
+    GROUP BY ALL
+)
+GROUP BY ALL;
 ```
 
-**2. ECM Vendor**
-
-```sql
-CREATE OR REPLACE TABLE DW.T_DIM_ECM_VENDOR_DEF (
-    SAP_Vendor_Key            BIGINT AUTOINCREMENT PRIMARY KEY, -- surrogate key
-    SAP_Vendor_ID             VARCHAR(50) NOT NULL, -- business key
-    REGION_CODE               VARCHAR(50),
-    SAP_Vendor_Name           VARCHAR(255),
-    Parent_Vendor_Code        VARCHAR(50),
-    Parent_Vendor_Name        VARCHAR(255),
-    ECM_Product_Category      VARCHAR(255),
-    CREATED_DATE              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    LAST_UPDATED_DATE         TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-### ✅ Dimension Views (expose user-friendly version)
-
-These are optional but very useful to abstract surrogate keys.
-
-**Supplier Site Profile View**
-
-```sql
-CREATE OR REPLACE VIEW DW.V_DIM_ETQ_SUPPLIER_SITE_PROFILE AS
-SELECT 
-    Supplier_Site_Profile_Key,
-    ETQ_SSP_ID,
-    ETQ_SSP_NAME_ID,
-    EIQ_RISK_SCORE,
-    SAP_VENDORNAME_ID,
-    ETQ_APPROVAL_STATUS,
-    SITE_OVERALL_RISK,
-    EMPLOYEE_COUNT
-FROM DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF;
-```
-
-**ECM Vendor View**
-
-```sql
-CREATE OR REPLACE VIEW DW.V_DIM_ECM_VENDOR AS
-SELECT 
-    SAP_Vendor_Key,
-    SAP_Vendor_ID,
-    REGION_CODE,
-    SAP_Vendor_Name,
-    Parent_Vendor_Code,
-    Parent_Vendor_Name,
-    ECM_Product_Category
-FROM DW.T_DIM_ECM_VENDOR_DEF;
-```
-
----
-
-### ✅ Fact Views (already good — just polishing)
-
-**3. Social Compliance Due Diligence**
-
-```sql
-CREATE OR REPLACE VIEW DW.V_FACT_ECM_SOC_COMPL_DUE_DILIGENCE_EVENT AS
-SELECT 
-    ROW_NUMBER() OVER (ORDER BY scd.EVENT_ID) AS Fact_ID,
-    ssp.Supplier_Site_Profile_Key,
-    v.SAP_Vendor_Key,
-    scd.AUDIT_RENEWAL_DATE,
-    scd.SUB_EVENT_SEQUENCE_NUMBER,
-    scd.SUB_EVENT_TYPE,
-    scd.AUDITOR,
-    scd.ASSESSMENT_PROTOCOL,
-    scd.DUE_DILIGENCE_REQUESTER,
-    scd.DUE_DILIGENCE_TYPE,
-    scd.AUDIT_RENEWAL_EXECUTION_STATUS,
-    scd.DUE_DILIGENCE_REQUESTED_DATE,
-    scd.CUSTOMER_DEADLINE_DATE,
-    scd.DUE_DILIGENCE_DATE,
-    scd.FINAL_DD_COMPLETION_DATE,
-    scd.ZERO_TOLERANCE_FINDINGS_COUNT,
-    scd.CRITICAL_FINDINGS_COUNT,
-    scd.MAJOR_1_FINDINGS_COUNT,
-    scd.MINOR_FINDINGS_COUNT,
-    scd.TOTAL_MAJOR_FINDINGS_COUNT,
-    scd.TOTAL_MINOR_FINDINGS_COUNT
-FROM MDS.STAGING.T_ECM_SOCIAL_COMPLIANCE_DUE_DILIGENCE scd
-JOIN DW.T_DIM_ETQ_SUPPLIER_SITE_PROFILE_DEF ssp
-    ON scd.ETQ_SSP_NAME_ID = ssp.ETQ_SSP_NAME_ID
-JOIN DW.T_DIM_ECM_VENDOR_DEF v
-    ON ssp.SAP_VENDORNAME_ID = v.SAP_Vendor_ID;
-```
-
-**4. Spend Fact**
-
-```sql
-CREATE OR REPLACE VIEW DW.V_FACT_PO_SPEND AS
-SELECT 
-    ROW_NUMBER() OVER (ORDER BY p.SAP_VENDOR_ID, p.SKU_ID, p.Date) AS Fact_ID,
-    v.SAP_Vendor_Key,
-    p.Date AS Spend_Date,
-    p.SKU_ID,
-    p.Spend_in_Dollars
-FROM MDS.STAGING.T_PO_SPEND p
-JOIN DW.T_DIM_ECM_VENDOR_DEF v
-    ON p.SAP_VENDOR_ID = v.SAP_Vendor_ID;
-```
-
----
-
-### 🔑 Notes
-
-* **SCD1 logic** → When reloading dimensions, overwrite attribute values (e.g., vendor name change just updates the row).
-* **Surrogate keys** (autoincrement) provide stability in fact joins even if business keys change.
-* **Views** → Insulate users from surrogate key complexity, while still letting facts join cleanly to dimensions.
-
----
-
-👉 Do you also want me to give you the **MERGE (upsert) SQL** for populating these dimension tables with SCD1 logic from staging? That way, every ETL load will keep your dims fresh.
+The structure is just the two original views stacked as subqueries — the innermost block is view 1's inner query, the middle block is view 1's outer aggregation, and the outermost block is view 3's aggregation. Nothing in the calculation logic is touched, so results will be identical to what you'd get joining view 3 today.
