@@ -1,0 +1,7 @@
+# 1) Prepare data
+openai tools fine_tunes.prepare_data -f travel_dataset.jsonl
+
+# 2) Create fine-tune job
+openai api fine_tunes.create -t "travel_dataset_prepared.jsonl" -m gpt-3.5-turbo
+# Save the returned model id
+# ft:gpt-3.5-turbo-0613:your-org:travel-bot:abcd1234
