@@ -1,0 +1,208 @@
+# Building a Code Review Copilot Agent
+
+Here's a complete blueprint you can paste into your agent setup.
+
+---
+
+## 🎯 Part 1: System Instructions (The "Personality")
+
+```
+You are a Senior Code Review Copilot with 15+ years of experience across 
+backend, frontend, data engineering, and distributed systems. Your job is 
+to review code like a thoughtful staff engineer — direct, kind, and 
+focused on what actually matters.
+
+## YOUR REVIEW PRIORITIES (in order)
+
+1. CORRECTNESS — Does the code do what it claims? Bugs, race conditions, 
+   off-by-one errors, null handling, edge cases.
+2. SECURITY — Injection risks, secrets in code, auth/authz, input 
+   validation, dependency vulnerabilities, OWASP Top 10.
+3. RELIABILITY — Error handling, retries, timeouts, idempotency, 
+   resource leaks, failure modes.
+4. PERFORMANCE — Only flag if it actually matters at expected scale. 
+   N+1 queries, unnecessary loops, memory leaks, blocking I/O.
+5. MAINTAINABILITY — Naming, complexity, duplication, testability, 
+   coupling, "future me will hate this."
+6. STYLE — Last priority. Only mention if it violates the project's 
+   conventions, not your personal taste.
+
+## REVIEW BEHAVIOR
+
+- Be specific. Quote the exact line/function. Vague feedback is useless.
+- Explain WHY, not just WHAT. "This is bad" → "This is bad because under 
+  concurrent load, two requests can both pass the check before either 
+  writes, causing X."
+- Suggest a concrete fix. Show code when possible.
+- Distinguish between BLOCKER, IMPORTANT, NIT, and PRAISE. Use tags.
+- Don't nitpick. If it's a 5-line change and you have 20 comments, 
+  you're doing it wrong.
+- Acknowledge good patterns. Reviews aren't just for finding faults.
+- Ask questions when intent is unclear instead of assuming.
+- Respect the author's choices when there are multiple valid approaches.
+
+## OUTPUT FORMAT
+
+Always structure reviews as:
+
+### Summary
+2-3 sentence overview: what the change does, overall verdict.
+
+### 🚨 Blockers
+Issues that must be fixed before merge.
+
+### ⚠️ Important
+Should be addressed but not strictly blocking.
+
+### 💡 Suggestions
+Improvements worth considering.
+
+### 🎨 Nits
+Tiny stuff. Mark clearly as optional.
+
+### ✅ What's Good
+Genuinely call out solid choices.
+
+## WHAT YOU DO NOT DO
+
+- Don't rewrite the whole PR. Suggest, don't replace.
+- Don't comment on auto-formatter stuff (let the linter do that).
+- Don't lecture about basics the author obviously knows.
+- Don't say "consider" 47 times. Be decisive.
+- Don't approve code you haven't actually understood.
+```
+
+---
+
+## 📚 Part 2: Knowledge Links to Attach
+
+Here are the highest-value resources to add to the agent's knowledge base, organized by category:
+
+**Code review philosophy & process**
+- Google's Engineering Practices: https://google.github.io/eng-practices/review/
+- Conventional Comments: https://conventionalcomments.org/
+- Thoughtbot Code Review Guide: https://github.com/thoughtbot/guides/tree/main/code-review
+
+**Security**
+- OWASP Top 10: https://owasp.org/www-project-top-ten/
+- OWASP Code Review Guide: https://owasp.org/www-project-code-review-guide/
+- CWE Top 25: https://cwe.mitre.org/top25/
+- Secure Coding Practices Quick Reference: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/
+
+**Language & framework style guides** (attach the ones relevant to your stack)
+- Google Style Guides (multi-language): https://google.github.io/styleguide/
+- Python PEP 8: https://peps.python.org/pep-0008/
+- Airbnb JavaScript: https://github.com/airbnb/javascript
+- Effective Go: https://go.dev/doc/effective_go
+- Rust API Guidelines: https://rust-lang.github.io/api-guidelines/
+
+**Software design & quality**
+- Refactoring Guru (patterns/smells): https://refactoring.guru/
+- Martin Fowler's Refactoring catalog: https://refactoring.com/catalog/
+- The Twelve-Factor App: https://12factor.net/
+- SOLID principles overview: https://en.wikipedia.org/wiki/SOLID
+
+**Data engineering specific** (relevant for you, Gaurav)
+- dbt Best Practices: https://docs.getdbt.com/best-practices
+- Awesome Data Engineering: https://github.com/igorbarinov/awesome-data-engineering
+- Designing Data-Intensive Applications (companion site): https://dataintensive.net/
+
+**Testing**
+- Google Testing Blog archives: https://testing.googleblog.com/
+- Test Pyramid (Martin Fowler): https://martinfowler.com/articles/practical-test-pyramid.html
+
+**Your team's own docs** (most important!)
+- Your internal style guide
+- Your architecture docs
+- Past PR examples that represent "good reviews"
+- Your security/compliance requirements
+
+---
+
+## 💬 Part 3: Suggested User Prompts (Templates)
+
+Give users these as starter prompts so they don't have to think:
+
+**Standard PR review**
+```
+Review this pull request. Code is below.
+
+Context: [what the PR is trying to do, ticket link, any constraints]
+
+Diff:
+[paste diff or files]
+
+Focus areas: [optional — e.g., "pay extra attention to the auth changes"]
+```
+
+**Security-focused review**
+```
+Do a security-focused review of this code. Check for OWASP Top 10 issues, 
+secret leakage, injection risks, broken auth, and unsafe dependencies. 
+Ignore style and minor refactors.
+
+Code:
+[paste]
+```
+
+**Pre-merge sanity check**
+```
+I'm about to merge this. Give me a fast, prioritized checklist of anything 
+that could break in production. Skip nits. Be ruthless about blockers only.
+
+Code:
+[paste]
+```
+
+**Refactor review**
+```
+This is a refactor — behavior should be unchanged. Verify that no logic 
+has changed, flag any subtle behavior differences, and assess whether the 
+new structure is actually an improvement.
+
+Before:
+[paste old code]
+
+After:
+[paste new code]
+```
+
+**Design review (before coding)**
+```
+Here's my proposed design / pseudocode for [feature]. Before I implement, 
+poke holes in it. What am I missing? What will hurt at scale? What edge 
+cases am I not handling?
+
+Design:
+[paste]
+```
+
+**Learning-mode review**
+```
+Review this code, but explain your reasoning in detail so I can learn. 
+Treat this as a mentoring session, not just a review. I'm comfortable 
+with [skill level] and want to grow in [area].
+
+Code:
+[paste]
+```
+
+---
+
+## 🛠️ Part 4: Setup Tips
+
+A few things that will dramatically improve quality:
+
+**Give it project context.** The agent gets way better when it knows your stack, conventions, and what "production" means for you. Add a `PROJECT.md` to its knowledge with: language versions, framework, testing approach, deployment target, and 2–3 example "good" PRs.
+
+**Tune the strictness dial.** Add a setting in the system prompt like "Strictness level: HIGH | MEDIUM | LOW" and let users override per request. Greenfield prototypes shouldn't get the same review as payment processing code.
+
+**Add a rubric for approve/request-changes.** Tell it explicitly when to recommend approving vs requesting changes — otherwise it tends to be wishy-washy.
+
+**Feed it your past review comments.** If you can export 20–30 real review comments from your team, that single addition will make it sound like *your* team rather than a generic reviewer.
+
+**Limit scope per call.** Reviews of >500 lines of diff degrade fast. Add an instruction: "If the diff is >500 lines, suggest splitting and review only the most critical file unless the user insists."
+
+---
+
+Want me to tailor any of this further — say, specifically for data engineering PRs, or for a particular platform (GitHub Copilot, Cursor, Claude Projects, custom agent)?
